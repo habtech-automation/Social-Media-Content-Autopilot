@@ -1,0 +1,79 @@
+{
+  "name": "Content Autopilot",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-sheets:watchRows",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": null,
+        "mode": "map",
+        "includesHeaders": true,
+        "limit": 2,
+        "spreadsheetId": "YOUR_SPREADSHEET_ID",
+        "sheetId": "YOUR_SHEET_TAB_NAME",
+        "tableFirstRow": "A1:Z1"
+      },
+      "mapper": {}
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {},
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 3,
+              "module": "facebook-pages:CreatePost",
+              "version": 6,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": {
+                "page_id": "YOUR_FACEBOOK_PAGE_ID",
+                "message": "{{1.`0`}}",
+                "link": "{{1.`2`}}"
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 4,
+              "module": "linkedin:CreatePost",
+              "version": 2,
+              "parameters": { "__IMTCONN__": null },
+              "mapper": {
+                "content": "{{1.`0`}}",
+                "type": "",
+                "visibility": "PUBLIC"
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 5,
+              "module": "instagram-business:CreatePostPhoto",
+              "version": 1,
+              "filter": {
+                "name": "Has image URL",
+                "conditions": [[{ "a": "{{1.`1`}}", "o": "exist" }]]
+              },
+              "parameters": { "__IMTCONN__": null },
+              "mapper": {
+                "accountId": "YOUR_INSTAGRAM_ACCOUNT_ID",
+                "image_url": "{{1.`1`}}",
+                "caption": "{{1.`0`}}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": { "version": 1 }
+}
